@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:title="total carbs"
+        android:key="@string/carbs_key"
+        android:defaultValue="@string/carbs_default"
+        android:inputType="text"
+        android:singleLine="true" />
+    <EditTextPreference
+        android:title="total fats"
+        android:key="@string/fats_key"
+        android:defaultValue="@string/fats_default"
+        android:inputType="text"
+        android:singleLine="true" />
+    <EditTextPreference
+        android:title="total proteins"
+        android:key="@string/proteins_key"
+        android:defaultValue="@string/proteins_default"
+        android:inputType="text"
+        android:singleLine="true" />
+</PreferenceScreen>
