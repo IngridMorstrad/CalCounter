@@ -4,7 +4,9 @@
     <string name="proteins_key">proteinsKey</string>
     <string name="fats_key">fatsKey</string>
     <string name="carbs_key">carbsKey</string>
-    <string name="carbs_default">266</string>
+    <string name="carbs_default">236</string>
     <string name="fats_default">116</string>
     <string name="proteins_default">166</string>
+    <string name="title_activity_food">FoodActivity</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 </resources>

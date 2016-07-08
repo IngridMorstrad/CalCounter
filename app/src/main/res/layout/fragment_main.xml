@@ -1,46 +1,49 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.ashwinmenon.www.calcounter.MainActivityFragment"
     tools:showIn="@layout/activity_main">
 
-    <TextView
-        android:id="@+id/calories"
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="4"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/calories"
+        android:id="@+id/lvItems" />
+
+    <TextView
+        android:id="@+id/calories"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:textSize="30sp"
-        android:gravity="center"
+        android:padding="10dp"
         android:text="" />
 
     <TextView
-        android:id="@+id/carbs"
-        android:layout_width="match_parent"
+        android:id="@+id/avg"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_toRightOf="@id/calories"
+        android:layout_toEndOf="@id/calories"
+        android:layout_alignTop="@id/calories"
         android:textSize="30sp"
-        android:gravity="center"
-        android:text="@string/carbs_default" />
-
-    <TextView
-        android:id="@+id/fats"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="30sp"
-        android:gravity="center"
+        android:padding="10dp"
         android:text="" />
 
     <TextView
         android:id="@+id/proteins"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_alignTop="@id/calories"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:textSize="30sp"
-        android:gravity="center"
+        android:padding="10dp"
         android:text="" />
 
-
-</LinearLayout>
+</RelativeLayout>
