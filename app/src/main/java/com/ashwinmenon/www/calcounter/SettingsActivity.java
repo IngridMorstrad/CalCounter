@@ -25,9 +25,7 @@ public class SettingsActivity extends PreferenceActivity
 
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.carbs_key)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.fats_key)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.proteins_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.key_days)));
     }
 
     /**

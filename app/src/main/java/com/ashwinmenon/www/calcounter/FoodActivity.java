@@ -3,7 +3,6 @@ package com.ashwinmenon.www.calcounter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,12 +27,8 @@ public class FoodActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         Intent intent = getIntent();
-        //ArrayList<Integer> proteins = intent.getIntegerArrayListExtra(MainActivityFragment.PROTEINS);
-        //ArrayList<Integer> cals = intent.getIntegerArrayListExtra(MainActivityFragment.CALS);
-        //ArrayList<String> foods = intent.getStringArrayListExtra(MainActivityFragment.FOODS);
+
         pos = intent.getIntExtra(MainActivityFragment.POSITION, -1);
         if (pos == -1) {
             Toast T = Toast.makeText(this, "POSITION ERROR", Toast.LENGTH_LONG);

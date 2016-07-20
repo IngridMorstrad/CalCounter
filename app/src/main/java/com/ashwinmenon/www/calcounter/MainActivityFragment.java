@@ -3,6 +3,7 @@ package com.ashwinmenon.www.calcounter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,15 +34,15 @@ public class MainActivityFragment extends Fragment {
     public final static String CALS = "com.ashwinmenon.www.CalCounter.CALS";
     public final static String FOODS = "com.ashwinmenon.www.CalCounter.FOODS";
     public final static String POSITION = "com.ashwinmenon.www.CalCounter.POS";
-    Integer proteinsTotal, calsTotal;
+    public final static String DAY_CLICKED = "com.ashwinmenon.www.CalCounter.DAY";
+    Integer proteinsTotal, calsTotal, daysToQuery;
     private ArrayList<String> days;
     public static ArrayList< ArrayList <Integer> > proteins;
     public static ArrayList< ArrayList <Integer> > cals;
     public static ArrayList< ArrayList <String> > foods;
     private ArrayAdapter<String> daysAdapter;
     private ListView lvItems;
-    public final static String DAY_CLICKED = "com.ashwinmenon.www.CalCounter.DAY";
-    private boolean displayWeek;
+    private boolean displayFilter;
 
     public MainActivityFragment() {
     }
@@ -161,22 +162,22 @@ public class MainActivityFragment extends Fragment {
         }
         GregorianCalendar gCal = new GregorianCalendar();
         gCal.setTime(startDay);
-        Integer dayscnt = 0;
+        Integer daysCnt = 0;
         for (; !gCal.getTime().after(currDay); gCal.add(Calendar.DATE, 1)) {
             days.add(curFormatter.format(gCal.getTime()));
-            dayscnt++;
+            daysCnt++;
         }
 
         readItems();
-        while (proteins.size() < dayscnt) proteins.add(new ArrayList<Integer>());
-        while (foods.size() < dayscnt) foods.add(new ArrayList<String>());
-        while (cals.size() < dayscnt) cals.add(new ArrayList<Integer>());
-        daysAdapter = new ArrayAdapter<String>(this.getActivity(),
+        while (proteins.size() < daysCnt) proteins.add(new ArrayList<Integer>());
+        while (foods.size() < daysCnt) foods.add(new ArrayList<String>());
+        while (cals.size() < daysCnt) cals.add(new ArrayList<Integer>());
+        daysAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_1, days);
 
         proteinsTotal = 0;
         calsTotal = 0;
-        displayWeek = false;
+        displayFilter = false;
         super.onCreate(savedInstanceState);
     }
 
@@ -202,17 +203,32 @@ public class MainActivityFragment extends Fragment {
                 });
     }
 
+    private View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+
     private void updateDisplay() {
         Activity a = getActivity();
         TextView proteinsView = (TextView) a.findViewById(R.id.proteins);
         TextView calsView = (TextView) a.findViewById(R.id.calories);
         TextView avgView = (TextView) a.findViewById(R.id.avg);
-        Integer proteinSum = 0, calSum = 0;
-
+        Integer proteinSum = 0, calSum = 0, day = 0;
         Double average = 0.0;
 
-        int day = 0;
-        if (displayWeek) day = Math.max(day, proteins.size() - 7);
+        for (day = 0; day < proteins.size(); day++) getViewByPosition(day, lvItems).setBackgroundColor(getResources().getColor(android.R.color.background_light));
+
+        day = 0;
+
+        if (displayFilter) day = Math.max(day, proteins.size() - daysToQuery);
+
         for(; day < proteins.size(); day++) {
             for (Integer i: proteins.get(day)) {
                 proteinSum += i;
@@ -220,6 +236,8 @@ public class MainActivityFragment extends Fragment {
             for (Integer i: cals.get(day)) {
                 calSum += i;
             }
+
+            if (displayFilter) getViewByPosition(day, lvItems).setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
         }
 
         proteinsView.setText(proteinSum.toString());
@@ -235,6 +253,7 @@ public class MainActivityFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        daysToQuery = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getActivity().getString(R.string.key_days),"7"));
         updateDisplay();
         writeItems();
     }
@@ -249,10 +268,11 @@ public class MainActivityFragment extends Fragment {
         lvItems.setAdapter(daysAdapter);
 
         View cals = rootView.findViewById(R.id.calories);
+
         cals.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayWeek = !displayWeek;
+                displayFilter = !displayFilter;
                 updateDisplay();
             }
         });
