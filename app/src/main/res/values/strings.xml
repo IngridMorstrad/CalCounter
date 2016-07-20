@@ -1,12 +1,9 @@
 <resources>
     <string name="app_name">CalCounter</string>
     <string name="action_settings">Settings</string>
-    <string name="proteins_key">proteinsKey</string>
-    <string name="fats_key">fatsKey</string>
-    <string name="carbs_key">carbsKey</string>
-    <string name="carbs_default">236</string>
-    <string name="fats_default">116</string>
-    <string name="proteins_default">166</string>
     <string name="title_activity_food">FoodActivity</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="enter_food">Enter a food</string>
+    <string name="days_to_query">Days to query</string>
+    <string name="key_days">days_to_query</string>
 </resources>
