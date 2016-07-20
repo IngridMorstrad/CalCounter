@@ -12,70 +12,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-    <ListView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:layout_weight=".5"
-        android:id="@+id/lvFoods" />
-
-    <ListView
-        android:id="@+id/lvCals"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:layout_weight=".25" />
-
-    <ListView
-        android:id="@+id/lvProteins"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:layout_weight=".25" />
-
-    </LinearLayout>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/etFood"
-        android:hint="Enter a food" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="C"
-            android:id="@+id/etCals"
-            android:inputType="numberDecimal" />
-
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="P"
-            android:id="@+id/etProteins"
-            android:inputType="numberDecimal" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add Food"
-            android:id="@+id/btnAdd" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight=".15"
         android:orientation="horizontal">
 
         <TextView
@@ -84,7 +22,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_margin="10dp"
-            android:text="00" />
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/tvDailyProteins"
@@ -92,14 +30,87 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_margin="10dp"
-            android:text="023"/>
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/tvDailyAverage"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:layout_margin="10dp"
-            android:layout_weight="1"/>
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".7"
+        android:orientation="horizontal">
+
+        <ListView
+            android:id="@+id/lvFoods"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight=".5" />
+
+        <ListView
+            android:id="@+id/lvCals"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight=".25" />
+
+        <ListView
+            android:id="@+id/lvProteins"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_weight=".25" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".15"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/etFood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter a food" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <EditText
+                android:id="@+id/etCals"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="C"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/etProteins"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="P"
+                android:inputType="numberDecimal" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Food"
+                android:id="@+id/btnAdd" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

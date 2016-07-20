@@ -44,23 +44,13 @@ public class FoodActivity extends AppCompatActivity {
         proteinSum = sumArrayList(MainActivityFragment.proteins.get(pos));
         calsSum = sumArrayList(MainActivityFragment.cals.get(pos));
 
-        updateDailyViews();
-
-        Button b = (Button) findViewById(R.id.btnAdd);
         dailyFoodAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, MainActivityFragment.foods.get(pos));
         dailyCalsAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_list_item_1, MainActivityFragment.cals.get(pos));
         dailyProteinsAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_list_item_1, MainActivityFragment.proteins.get(pos));
 
-        ListView lv = (ListView) findViewById(R.id.lvFoods);
-        lv.setAdapter(dailyFoodAdapter);
+        Button addFood = (Button) findViewById(R.id.btnAdd);
 
-        ListView lvCals = (ListView) findViewById(R.id.lvCals);
-        lvCals.setAdapter(dailyCalsAdapter);
-
-        ListView lvProteins = (ListView) findViewById(R.id.lvProteins);
-        lvProteins.setAdapter(dailyProteinsAdapter);
-
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        AdapterView.OnItemClickListener showRatio = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int calories = MainActivityFragment.cals.get(pos).get(position);
@@ -72,65 +62,81 @@ public class FoodActivity extends AppCompatActivity {
                 else {
                     message = String.format("%.2f", (double)calories/proteins);
                 }
-                Toast t = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
-                t.show();
+                Toast ratio = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+                ratio.show();
             }
-        });
+        };
 
-        lv.setOnItemLongClickListener(
-                new AdapterView.OnItemLongClickListener() {
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                        //String item = MainActivityFragment.foods.get(pos).get(position);
-                        MainActivityFragment.foods.get(pos).remove(position);
-                        calsSum -= MainActivityFragment.cals.get(pos).get(position);
-                        MainActivityFragment.cals.get(pos).remove(position);
-                        proteinSum -= MainActivityFragment.proteins.get(pos).get(position);
-                        MainActivityFragment.proteins.get(pos).remove(position);
+        AdapterView.OnItemLongClickListener deleteItem = new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //String item = MainActivityFragment.foods.get(pos).get(position);
+                MainActivityFragment.foods.get(pos).remove(position);
+                calsSum -= MainActivityFragment.cals.get(pos).get(position);
+                MainActivityFragment.cals.get(pos).remove(position);
+                proteinSum -= MainActivityFragment.proteins.get(pos).get(position);
+                MainActivityFragment.proteins.get(pos).remove(position);
 
-                        updateDailyViews();
-                        // Refresh the adapter
-                        dailyFoodAdapter.notifyDataSetChanged();
-                        dailyCalsAdapter.notifyDataSetChanged();
-                        dailyProteinsAdapter.notifyDataSetChanged();
+                updateDailyViews();
+                // Refresh the adapter
+                dailyFoodAdapter.notifyDataSetChanged();
+                dailyCalsAdapter.notifyDataSetChanged();
+                dailyProteinsAdapter.notifyDataSetChanged();
 
-                        // Return true consumes the long click event (marks it handled)
-                        return true;
-                    }
+                // Return true consumes the long click event (marks it handled)
+                return true;
+            }
+        };
+
+        ListView lvFoods = (ListView) findViewById(R.id.lvFoods);
+        lvFoods.setAdapter(dailyFoodAdapter);
+
+        ListView lvCals = (ListView) findViewById(R.id.lvCals);
+        lvCals.setAdapter(dailyCalsAdapter);
+
+        ListView lvProteins = (ListView) findViewById(R.id.lvProteins);
+        lvProteins.setAdapter(dailyProteinsAdapter);
+
+        lvFoods.setOnItemClickListener(showRatio);
+        lvCals.setOnItemClickListener(showRatio);
+        lvProteins.setOnItemClickListener(showRatio);
+
+        lvFoods.setOnItemLongClickListener(deleteItem);
+        lvCals.setOnItemLongClickListener(deleteItem);
+        lvProteins.setOnItemLongClickListener(deleteItem);
+
+        addFood.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EditText etFood = (EditText)findViewById(R.id.etFood);
+                    String foodName = etFood.getText().toString();
+
+                    EditText etProteins = (EditText) findViewById(R.id.etProteins);
+                    Integer proteins = Integer.parseInt(etProteins.getText().toString());
+                    proteinSum += proteins;
+
+                    EditText etCals = (EditText) findViewById(R.id.etCals);
+                    Integer cals = Integer.parseInt(etCals.getText().toString());
+                    calsSum += cals;
+
+                    etCals.setText("");
+                    etProteins.setText("");
+                    etFood.setText("");
+
+                    dailyFoodAdapter.add(foodName);
+                    dailyProteinsAdapter.add(proteins);
+                    dailyCalsAdapter.add(cals);
+
+                    updateDailyViews();
                 }
+            }
         );
 
-        b.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        EditText etFood = (EditText)findViewById(R.id.etFood);
-                        String foodName = etFood.getText().toString();
-
-                        EditText etProteins = (EditText) findViewById(R.id.etProteins);
-                        Integer proteins = Integer.parseInt(etProteins.getText().toString());
-                        proteinSum += proteins;
-
-                        EditText etCals = (EditText) findViewById(R.id.etCals);
-                        Integer cals = Integer.parseInt(etCals.getText().toString());
-                        calsSum += cals;
-
-                        etCals.setText("");
-                        etProteins.setText("");
-                        etFood.setText("");
-
-                        updateDailyViews();
-
-                        dailyFoodAdapter.add(foodName);
-                        dailyProteinsAdapter.add(proteins);
-                        dailyCalsAdapter.add(cals);
-                    }
-                }
-        );
+        updateDailyViews();
     }
 
     private void updateDailyViews() {
-
         TextView dailyCalSum = (TextView) findViewById(R.id.tvDailyCals);
         TextView dailyProteinSum = (TextView) findViewById(R.id.tvDailyProteins);
         TextView avgView = (TextView) findViewById(R.id.tvDailyAverage);
