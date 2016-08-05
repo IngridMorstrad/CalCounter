@@ -30,11 +30,7 @@ import java.util.GregorianCalendar;
  */
 public class MainActivityFragment extends Fragment {
 
-    public final static String PROTEINS = "com.ashwinmenon.www.CalCounter.PROTEINS";
-    public final static String CALS = "com.ashwinmenon.www.CalCounter.CALS";
-    public final static String FOODS = "com.ashwinmenon.www.CalCounter.FOODS";
     public final static String POSITION = "com.ashwinmenon.www.CalCounter.POS";
-    public final static String DAY_CLICKED = "com.ashwinmenon.www.CalCounter.DAY";
     Integer proteinsTotal, calsTotal, daysToQuery;
     private ArrayList<String> days;
     public static ArrayList< ArrayList <Integer> > proteins;
@@ -145,10 +141,11 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         SimpleDateFormat curFormatter = new SimpleDateFormat("dd/MM/yyyy");
         Date startDay, currDay;
+        GregorianCalendar gCal;
+
         startDay = new Date();
         currDay = new Date();
         days = new ArrayList<String>();
-        Calendar c = Calendar.getInstance();
 
         try {
             startDay = curFormatter.parse("30/05/2016");
@@ -156,22 +153,21 @@ public class MainActivityFragment extends Fragment {
             e.printStackTrace();
         }
         try {
-            currDay = curFormatter.parse(curFormatter.format(c.getTime()));
+            currDay = curFormatter.parse(curFormatter.format(Calendar.getInstance().getTime()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        GregorianCalendar gCal = new GregorianCalendar();
+
+        gCal = new GregorianCalendar();
         gCal.setTime(startDay);
-        Integer daysCnt = 0;
         for (; !gCal.getTime().after(currDay); gCal.add(Calendar.DATE, 1)) {
-            days.add(curFormatter.format(gCal.getTime()));
-            daysCnt++;
+            days.add(0,curFormatter.format(gCal.getTime()));
         }
 
         readItems();
-        while (proteins.size() < daysCnt) proteins.add(new ArrayList<Integer>());
-        while (foods.size() < daysCnt) foods.add(new ArrayList<String>());
-        while (cals.size() < daysCnt) cals.add(new ArrayList<Integer>());
+        while (proteins.size() < days.size()) proteins.add(new ArrayList<Integer>());
+        while (foods.size() < days.size()) foods.add(new ArrayList<String>());
+        while (cals.size() < days.size()) cals.add(new ArrayList<Integer>());
         daysAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_1, days);
 
@@ -181,7 +177,7 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    // Attaches a long click listener to the listview
+    // Add an ItemClickListener to start an activity where we can add foods for the day clicked
     private void setupListViewListener() {
         lvItems.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
@@ -189,15 +185,8 @@ public class MainActivityFragment extends Fragment {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Intent intent = new Intent(getActivity(), FoodActivity.class);
-                        intent.putExtra(DAY_CLICKED, days.get(position));
-                        intent.putExtra(POSITION, position);
-                        intent.putIntegerArrayListExtra(PROTEINS, proteins.get(position));
-                        intent.putIntegerArrayListExtra(CALS, cals.get(position));
-                        intent.putStringArrayListExtra(FOODS, foods.get(position));
+                        intent.putExtra(POSITION, days.size() - 1 - position);
                         startActivity(intent);
-                        // Refresh the adapter
-                        //daysAdapter.notifyDataSetChanged();
-                        //writeItems();
                     }
 
                 });
@@ -237,11 +226,19 @@ public class MainActivityFragment extends Fragment {
                 calSum += i;
             }
 
-            if (displayFilter) getViewByPosition(day, lvItems).setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+            // should later be changed to be updated when the view for the item is created
+            if (displayFilter) getViewByPosition(days.size() - 1 - day, lvItems).setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
         }
 
-        proteinsView.setText(proteinSum.toString());
-        calsView.setText(calSum.toString());
+        if (displayFilter) {
+            proteinsView.setText(String.format("%.2f",(double)proteinSum/daysToQuery));
+            calsView.setText(String.format("%.2f",(double)calSum/daysToQuery));
+        }
+        else {
+            proteinsView.setText(proteinSum.toString());
+            calsView.setText(calSum.toString());
+        }
+
         if (proteinSum != 0) {
             average = (double)calSum/proteinSum;
         }

@@ -16,12 +16,10 @@ import java.util.ArrayList;
 
 public class FoodActivity extends AppCompatActivity {
 
-    Integer pos;
     ArrayAdapter <String> dailyFoodAdapter;
     ArrayAdapter <Integer> dailyCalsAdapter;
     ArrayAdapter <Integer> dailyProteinsAdapter;
-    private Integer proteinSum;
-    private Integer calsSum;
+    private Integer proteinSum, calsSum, pos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
