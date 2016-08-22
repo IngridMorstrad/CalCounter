@@ -6,4 +6,10 @@
         android:inputType="number"
         android:key="@string/key_days"
         android:title="@string/days_to_query" />
+    <EditTextPreference
+        android:defaultValue="8"
+        android:dialogTitle="@string/days_to_average"
+        android:inputType="number"
+        android:key="@string/key_average"
+        android:title="@string/days_to_average" />
 </PreferenceScreen>

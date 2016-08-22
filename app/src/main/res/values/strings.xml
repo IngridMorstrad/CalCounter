@@ -6,4 +6,7 @@
     <string name="enter_food">Enter a food</string>
     <string name="days_to_query">Days to query</string>
     <string name="key_days">days_to_query</string>
+    <string name="action_chart">View Trend</string>
+    <string name="days_to_average">Days to average over</string>
+    <string name="key_average">days_to_average</string>
 </resources>

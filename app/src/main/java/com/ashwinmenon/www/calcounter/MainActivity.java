@@ -33,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
+        else if (id == R.id.action_chart) {
+            startActivity(new Intent(this, ChartActivity.class));
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
