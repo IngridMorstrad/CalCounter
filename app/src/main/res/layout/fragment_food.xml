@@ -7,6 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/colorBackground"
     tools:context="com.ashwinmenon.www.calcounter.FoodActivityFragment"
     tools:showIn="@layout/activity_food">
 
@@ -14,18 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight=".10"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@color/colorListItemBackground" >
 
         <TextView
             android:id="@+id/tvDailyCals"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="22sp"/>
-
-        <TextView
-            android:id="@+id/tvDailyProteins"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -40,34 +34,27 @@
             android:gravity="center"
             android:textSize="22sp"/>
 
+        <TextView
+            android:id="@+id/tvDailyProteins"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="22sp"/>
+
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight=".75"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="2dp" >
 
         <ListView
             android:id="@+id/lvFoods"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            android:layout_weight=".5" />
-
-        <ListView
-            android:id="@+id/lvCals"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            android:layout_weight=".25" />
-
-        <ListView
-            android:id="@+id/lvProteins"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            android:layout_weight=".25" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
@@ -86,7 +73,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal" >
 
             <EditText
                 android:id="@+id/etCals"

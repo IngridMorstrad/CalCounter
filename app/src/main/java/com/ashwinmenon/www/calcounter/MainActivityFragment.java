@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,107 +32,124 @@ import java.util.GregorianCalendar;
  */
 public class MainActivityFragment extends Fragment {
 
-    public final static String POSITION = "com.ashwinmenon.www.CalCounter.POS";
-    Integer proteinsTotal, calsTotal, daysToQuery;
+    // TODO: Refactor to use food file or a database
+    // TODO: USDA Food API
+    // TODO: Ability to add multiple of same food
+    // TODO: Add sort by cals/proteins/ratio & asc/desc
+    // TODO: Add option to colour foods by ratio/calorie/protein
+    final static String POSITION = "com.ashwinmenon.www.CalCounter.POS";
+    private Integer proteinsTotal;
+    private Integer calsTotal;
+    static Integer daysToQuery;
+    static boolean displayFilter;
     private ArrayList<String> days;
-    public static ArrayList< ArrayList <Integer> > proteins;
-    public static ArrayList< ArrayList <Integer> > cals;
-    public static ArrayList< ArrayList <String> > foods;
+    static ArrayList< ArrayList <Food> > foods;
     private ArrayAdapter<String> daysAdapter;
     private ListView lvItems;
-    private boolean displayFilter;
 
     public MainActivityFragment() {
     }
 
-    private void readItems() {
+    private void readNewItems() {
         File filesDir = getActivity().getFilesDir();
-        File calsFile = new File(filesDir, "cals.txt");
+        File foodsFile = new File(filesDir, "foodsNew.txt");
         LineIterator iter;
-        cals = new ArrayList<ArrayList<Integer>>();
-        try {
-            iter = FileUtils.lineIterator(calsFile);
-            while (iter.hasNext()) {
-                String fileData = iter.next().toString();
-                if (fileData.length() >= 6 && fileData.substring(0,6).equals("<DATE>")) {
-                    cals.add(new ArrayList<Integer>());
-                }
-                else {
-                    cals.get(cals.size() - 1).add(Integer.parseInt(fileData));
-                }
-            }
-        } catch (IOException e) {
-            cals = new ArrayList<ArrayList<Integer>>();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            cals = new ArrayList<ArrayList<Integer>>();
-        }
-        File foodsFile = new File(filesDir, "foods.txt");
-        foods = new ArrayList<ArrayList<String>>();
+        foods = new ArrayList<>();
         try {
             iter = FileUtils.lineIterator(foodsFile);
             while (iter.hasNext()) {
-                String fileData = iter.next().toString();
+                String fileData = iter.next();
                 if (fileData.length() >= 6 && fileData.substring(0,6).equals("<DATE>")) {
-                    foods.add(new ArrayList<String>());
+                    foods.add(new ArrayList<>());
                 }
                 else {
-                    foods.get(foods.size() - 1).add(fileData);
+                    String[] foodDetails = fileData.split("[<]+");
+                    foods.get(foods.size() - 1).add(new Food(foodDetails[0], Integer.parseInt(foodDetails[1]), Integer.parseInt(foodDetails[2])));
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            foods = new ArrayList<>();
+        } catch (IOException e) {
+            foods = new ArrayList<>();
+        }
+    }
+
+    private void readItems() {
+        File filesDir = getActivity().getFilesDir();
+        File foodsFile = new File(filesDir, "foods.txt");
+        LineIterator iter;
+        foods = new ArrayList<>();
+        try {
+            iter = FileUtils.lineIterator(foodsFile);
+            while (iter.hasNext()) {
+                String fileData = iter.next();
+
+                System.out.println("FOODS: " + fileData);
+                if (fileData.length() >= 6 && fileData.substring(0,6).equals("<DATE>")) {
+                    foods.add(new ArrayList<>());
+                }
+                else {
+                    foods.get(foods.size() - 1).add(new Food(fileData));
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            foods = new ArrayList<>();
+        } catch (IOException e) {
+            foods = new ArrayList<>();
+        }
+        File calsFile = new File(filesDir, "cals.txt");
+        int currDatePos = -1, currFoodPos = 0;
+        try {
+            iter = FileUtils.lineIterator(calsFile);
+            while (iter.hasNext()) {
+                String fileData = iter.next();
+                System.out.println("CALS: " + fileData);
+                if (fileData.length() >= 6 && fileData.substring(0,6).equals("<DATE>")) {
+                    currDatePos++;
+                    currFoodPos = 0;
+                }
+                else {
+                    foods.get(currDatePos).get(currFoodPos).setCalories(Integer.parseInt(fileData));
+                    currFoodPos++;
                 }
             }
         } catch (IOException e) {
-            foods = new ArrayList<ArrayList<String>>();
+            // pass
         } catch (ArrayIndexOutOfBoundsException e) {
-            foods = new ArrayList<ArrayList<String>>();
+            // pass
         }
         File proteinsFile = new File(filesDir, "proteins.txt");
-        proteins = new ArrayList<ArrayList<Integer>>();
+        currDatePos = -1;
+        currFoodPos = 0;
         try {
             iter = FileUtils.lineIterator(proteinsFile);
             while (iter.hasNext()) {
-                String fileData = iter.next().toString();
+                String fileData = iter.next();
                 if (fileData.length() >= 6 && fileData.substring(0,6).equals("<DATE>")) {
-                    proteins.add(new ArrayList<Integer>());
+                    currDatePos++;
+                    currFoodPos = 0;
                 }
                 else {
-                    proteins.get(proteins.size() - 1).add(Integer.parseInt(fileData));
+                    foods.get(currDatePos).get(currFoodPos).setProteins(Integer.parseInt(fileData));
+                    currFoodPos++;
                 }
             }
         } catch (IOException e) {
-            proteins = new ArrayList<ArrayList<Integer>>();
+            // pass
         } catch (ArrayIndexOutOfBoundsException e) {
-            proteins = new ArrayList<ArrayList<Integer>>();
+            // pass
         }
 
     }
 
     private void writeItems() {
         File filesDir = getActivity().getFilesDir();
-        File calsFile = new File(filesDir, "cals.txt");
+        File foodsFile = new File(filesDir, "foodsNew.txt");
         try {
-            FileUtils.writeStringToFile(calsFile, "");
-            for (ArrayList<Integer> dayCals: cals) {
-                FileUtils.writeStringToFile(calsFile,"<DATE>\n",true);
-                FileUtils.writeLines(calsFile,dayCals,true);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        File proteinsFile = new File(filesDir, "proteins.txt");
-        try {
-            FileUtils.writeStringToFile(proteinsFile, "");
-            for (ArrayList<Integer> dayCals: proteins) {
-                FileUtils.writeStringToFile(proteinsFile,"<DATE>\n",true);
-                FileUtils.writeLines(proteinsFile,dayCals,true);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        File foodsFile = new File(filesDir, "foods.txt");
-        try {
-            FileUtils.writeStringToFile(foodsFile,"");
-            for (ArrayList<String> dayCals: foods) {
+            FileUtils.writeStringToFile(foodsFile, "");
+            for (ArrayList<Food> dayFoods: foods) {
                 FileUtils.writeStringToFile(foodsFile,"<DATE>\n",true);
-                FileUtils.writeLines(foodsFile,dayCals,true);
+                FileUtils.writeLines(foodsFile,dayFoods,true);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -145,10 +164,11 @@ public class MainActivityFragment extends Fragment {
 
         startDay = new Date();
         currDay = new Date();
-        days = new ArrayList<String>();
+        days = new ArrayList<>();
 
         try {
-            startDay = curFormatter.parse("30/05/2016");
+            String startDate = "30/05/2018";
+            startDay = curFormatter.parse(startDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -164,16 +184,16 @@ public class MainActivityFragment extends Fragment {
             days.add(0,curFormatter.format(gCal.getTime()));
         }
 
-        readItems();
-        while (proteins.size() < days.size()) proteins.add(new ArrayList<Integer>());
-        while (foods.size() < days.size()) foods.add(new ArrayList<String>());
-        while (cals.size() < days.size()) cals.add(new ArrayList<Integer>());
-        daysAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, days);
+        readNewItems();
+
+        while (foods.size() < days.size()) foods.add(new ArrayList<>());
 
         proteinsTotal = 0;
         calsTotal = 0;
         displayFilter = false;
+
+        daysAdapter = new DayAdapter(getActivity(), days);
+
         super.onCreate(savedInstanceState);
     }
 
@@ -206,28 +226,19 @@ public class MainActivityFragment extends Fragment {
 
     private void updateDisplay() {
         Activity a = getActivity();
-        TextView proteinsView = (TextView) a.findViewById(R.id.proteins);
-        TextView calsView = (TextView) a.findViewById(R.id.calories);
-        TextView avgView = (TextView) a.findViewById(R.id.avg);
-        Integer proteinSum = 0, calSum = 0, day = 0;
-        Double average = 0.0;
+        TextView proteinsView = a.findViewById(R.id.proteins);
+        TextView calsView = a.findViewById(R.id.calories);
+        TextView ratioView = a.findViewById(R.id.avg);
+        Integer proteinSum = 0, calSum = 0, day;
+        Double ratio = 0.0;
 
-        for (day = 0; day < proteins.size(); day++) getViewByPosition(day, lvItems).setBackgroundColor(getResources().getColor(android.R.color.background_light));
+        day = Math.max(0, foods.size() - daysToQuery);
 
-        day = 0;
-
-        if (displayFilter) day = Math.max(day, proteins.size() - daysToQuery);
-
-        for(; day < proteins.size(); day++) {
-            for (Integer i: proteins.get(day)) {
-                proteinSum += i;
+        for(; day < foods.size(); day++) {
+            for (Food f : foods.get(day)) {
+                proteinSum += f.getProteinsInt();
+                calSum += f.getCaloriesInt();
             }
-            for (Integer i: cals.get(day)) {
-                calSum += i;
-            }
-
-            // should later be changed to be updated when the view for the item is created
-            if (displayFilter) getViewByPosition(days.size() - 1 - day, lvItems).setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
         }
 
         if (displayFilter) {
@@ -240,10 +251,11 @@ public class MainActivityFragment extends Fragment {
         }
 
         if (proteinSum != 0) {
-            average = (double)calSum/proteinSum;
+            ratio = (double)calSum/proteinSum;
         }
 
-        avgView.setText(String.format("%.2f",average));
+        ratioView.setText(String.format("%.2f",ratio));
+        daysAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -256,11 +268,10 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        lvItems = (ListView) rootView.findViewById(R.id.lvItems);
+        lvItems = rootView.findViewById(R.id.lvItems);
 
         lvItems.setAdapter(daysAdapter);
 
