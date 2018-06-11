@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -38,12 +39,12 @@ public class MainActivityFragment extends Fragment {
     // TODO: Add sort by cals/proteins/ratio & asc/desc
     // TODO: Add option to colour foods by ratio/calorie/protein
     final static String POSITION = "com.ashwinmenon.www.CalCounter.POS";
-    private Integer proteinsTotal;
-    private Integer calsTotal;
-    static Integer daysToQuery;
+    private int proteinsTotal;
+    private int calsTotal;
+    static int daysToQuery;
     static boolean displayFilter;
-    private ArrayList<String> days;
-    static ArrayList< ArrayList <Food> > foods;
+    private List<String> days;
+    static List< ArrayList <Food> > foods;
     private ArrayAdapter<String> daysAdapter;
     private ListView lvItems;
 
@@ -67,9 +68,7 @@ public class MainActivityFragment extends Fragment {
                     foods.get(foods.size() - 1).add(new Food(foodDetails[0], Integer.parseInt(foodDetails[1]), Integer.parseInt(foodDetails[2])));
                 }
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            foods = new ArrayList<>();
-        } catch (IOException e) {
+        } catch (ArrayIndexOutOfBoundsException | IOException e) {
             foods = new ArrayList<>();
         }
     }

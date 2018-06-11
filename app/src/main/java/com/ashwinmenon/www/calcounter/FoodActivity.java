@@ -98,7 +98,7 @@ public class FoodActivity extends AppCompatActivity {
         avgView.setText(String.format("%.2f",calcAverage(calsSum,proteinSum)));
     }
 
-    private Double calcAverage(Integer calsSum, Integer proteinSum) {
+    private Double calcAverage(int calsSum, int proteinSum) {
         if (proteinSum == 0) return -1.0;
         return (double)calsSum/proteinSum;
     }

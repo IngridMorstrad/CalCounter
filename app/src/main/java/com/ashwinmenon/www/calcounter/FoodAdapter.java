@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by TheAshman on 1/26/2017.
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 class FoodAdapter extends ArrayAdapter<Food> {
 
-    public FoodAdapter(Activity context, ArrayList<Food> w) {
+    public FoodAdapter(Activity context, List<Food> w) {
         super(context, 0, w);
     }
 

@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static com.ashwinmenon.www.calcounter.MainActivityFragment.daysToQuery;
 import static com.ashwinmenon.www.calcounter.MainActivityFragment.displayFilter;
@@ -18,7 +18,7 @@ import static com.ashwinmenon.www.calcounter.MainActivityFragment.displayFilter;
 
 class DayAdapter extends ArrayAdapter<String> {
 
-    public DayAdapter(Activity context, ArrayList<String> w) {
+    public DayAdapter(Activity context, List<String> w) {
         super(context, android.R.layout.simple_list_item_1, w);
     }
 
