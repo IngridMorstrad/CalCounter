@@ -64,14 +64,14 @@ public class FoodActivity extends AppCompatActivity {
 
         addFood.setOnClickListener(
                 v -> {
-                    EditText etFood = (EditText)findViewById(R.id.etFood);
+                    EditText etFood = findViewById(R.id.etFood);
                     String foodName = etFood.getText().toString();
 
-                    EditText etProteins = (EditText) findViewById(R.id.etProteins);
+                    EditText etProteins = findViewById(R.id.etProteins);
                     Integer proteins = Integer.parseInt(etProteins.getText().toString());
                     proteinSum += proteins;
 
-                    EditText etCals = (EditText) findViewById(R.id.etCals);
+                    EditText etCals = findViewById(R.id.etCals);
                     Integer cals = Integer.parseInt(etCals.getText().toString());
                     calsSum += cals;
 

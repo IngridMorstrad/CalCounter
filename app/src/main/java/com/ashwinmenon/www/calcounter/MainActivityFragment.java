@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,7 +38,6 @@ public class MainActivityFragment extends Fragment {
     // TODO: Add sort by cals/proteins/ratio & asc/desc
     // TODO: Add option to colour foods by ratio/calorie/protein
     final static String POSITION = "com.ashwinmenon.www.CalCounter.POS";
-    private int proteinsTotal;
     private int calsTotal;
     static int daysToQuery;
     static boolean displayFilter;
@@ -91,9 +89,7 @@ public class MainActivityFragment extends Fragment {
                     foods.get(foods.size() - 1).add(new Food(fileData));
                 }
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            foods = new ArrayList<>();
-        } catch (IOException e) {
+        } catch (ArrayIndexOutOfBoundsException | IOException e) {
             foods = new ArrayList<>();
         }
         File calsFile = new File(filesDir, "cals.txt");
@@ -112,9 +108,7 @@ public class MainActivityFragment extends Fragment {
                     currFoodPos++;
                 }
             }
-        } catch (IOException e) {
-            // pass
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (IOException | ArrayIndexOutOfBoundsException e) {
             // pass
         }
         File proteinsFile = new File(filesDir, "proteins.txt");
@@ -133,9 +127,7 @@ public class MainActivityFragment extends Fragment {
                     currFoodPos++;
                 }
             }
-        } catch (IOException e) {
-            // pass
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (IOException | ArrayIndexOutOfBoundsException e) {
             // pass
         }
 
@@ -187,7 +179,7 @@ public class MainActivityFragment extends Fragment {
 
         while (foods.size() < days.size()) foods.add(new ArrayList<>());
 
-        proteinsTotal = 0;
+        int proteinsTotal = 0;
         calsTotal = 0;
         displayFilter = false;
 
@@ -199,15 +191,10 @@ public class MainActivityFragment extends Fragment {
     // Add an ItemClickListener to start an activity where we can add foods for the day clicked
     private void setupListViewListener() {
         lvItems.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Intent intent = new Intent(getActivity(), FoodActivity.class);
-                        intent.putExtra(POSITION, days.size() - 1 - position);
-                        startActivity(intent);
-                    }
-
+                (parent, view, position, id) -> {
+                    Intent intent = new Intent(getActivity(), FoodActivity.class);
+                    intent.putExtra(POSITION, days.size() - 1 - position);
+                    startActivity(intent);
                 });
     }
 
@@ -276,12 +263,9 @@ public class MainActivityFragment extends Fragment {
 
         View cals = rootView.findViewById(R.id.calories);
 
-        cals.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                displayFilter = !displayFilter;
-                updateDisplay();
-            }
+        cals.setOnClickListener(v -> {
+            displayFilter = !displayFilter;
+            updateDisplay();
         });
 
         setupListViewListener();

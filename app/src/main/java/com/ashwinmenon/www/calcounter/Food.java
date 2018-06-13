@@ -7,7 +7,7 @@ package com.ashwinmenon.www.calcounter;
 class Food {
     private Integer calories;
     private Integer proteins;
-    private String name;
+    private final String name;
 
     public Food(String foodName) {
         this(foodName, 0, 0);
