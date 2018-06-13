@@ -1,8 +1,13 @@
 package com.ashwinmenon.www.calcounter;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -14,17 +19,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChartActivity extends AppCompatActivity {
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public class ChartFragment extends Fragment {
+
+    @NonNull
+    private final LineData lineData;
+    @NonNull
+    private final Description description;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chart);
-        LineChart chart = findViewById(R.id.chart);
         List<Entry> entries = new ArrayList<>();
 
         int sz = MainActivityFragment.foods.size();
-        int daysToAverageOver = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.key_average),"8"));
+        int daysToAverageOver = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_average),"8"));
         int daysToDisplay = 14;
         int currCalSum = 0;
         for (int i = 1; i <= Math.min(sz,daysToAverageOver*daysToDisplay); i++) {
@@ -38,12 +49,20 @@ public class ChartActivity extends AppCompatActivity {
         // needs to be sorted by x to work correctly
         Collections.reverse(entries);
         LineDataSet dataSet = new LineDataSet(entries, "Calories"); // add entries to dataset
-        LineData lineData = new LineData(dataSet);
-        chart.setData(lineData);
-        Description description = new Description();
+        lineData.addDataSet(dataSet);
         description.setText("Calorie trend: Calories consumed every " + daysToAverageOver + " days.");
+        description.setTextSize(12);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.activity_chart, container, false);
+        LineChart chart = rootView.findViewById(R.id.chart);
+        chart.setData(lineData);
         chart.setDescription(description);
         chart.invalidate();
+        return rootView;
     }
 
     private int sumOf(List<Food> integers) {

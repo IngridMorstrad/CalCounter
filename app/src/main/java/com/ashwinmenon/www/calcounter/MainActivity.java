@@ -1,10 +1,14 @@
 package com.ashwinmenon.www.calcounter;
 
-import android.content.Intent;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.LineData;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,7 +16,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
+        Fragment newFragment = new MainActivityFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack
+        transaction.add(R.id.main_container, newFragment);
+
+        // Commit the transaction
+        transaction.commit();
+}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -30,11 +43,27 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+            // Create new fragment and transaction
+            Fragment newFragment = new SettingsFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack
+            transaction.replace(R.id.main_container, newFragment);
+            transaction.addToBackStack(null);
+
+            // Commit the transaction
+            transaction.commit();
             return true;
         }
         else if (id == R.id.action_chart) {
-            startActivity(new Intent(this, ChartActivity.class));
+            Fragment newFragment = new ChartFragment(new LineData(), new Description());
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            transaction.replace(R.id.main_container, newFragment);
+            transaction.addToBackStack(null);
+
+            transaction.commit();
             return true;
         }
 

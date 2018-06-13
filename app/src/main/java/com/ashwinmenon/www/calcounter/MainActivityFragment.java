@@ -1,12 +1,12 @@
 package com.ashwinmenon.www.calcounter;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,16 +38,12 @@ public class MainActivityFragment extends Fragment {
     // TODO: Add sort by cals/proteins/ratio & asc/desc
     // TODO: Add option to colour foods by ratio/calorie/protein
     final static String POSITION = "com.ashwinmenon.www.CalCounter.POS";
-    private int calsTotal;
     static int daysToQuery;
     static boolean displayFilter;
     private List<String> days;
     static List< ArrayList <Food> > foods;
     private ArrayAdapter<String> daysAdapter;
     private ListView lvItems;
-
-    public MainActivityFragment() {
-    }
 
     private void readNewItems() {
         File filesDir = getActivity().getFilesDir();
@@ -179,8 +175,6 @@ public class MainActivityFragment extends Fragment {
 
         while (foods.size() < days.size()) foods.add(new ArrayList<>());
 
-        int proteinsTotal = 0;
-        calsTotal = 0;
         displayFilter = false;
 
         daysAdapter = new DayAdapter(getActivity(), days);

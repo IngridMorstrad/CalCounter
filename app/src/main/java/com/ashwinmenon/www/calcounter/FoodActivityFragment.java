@@ -13,10 +13,6 @@ import android.view.ViewGroup;
  */
 public class FoodActivityFragment extends Fragment {
 
-    public FoodActivityFragment() {
-
-    }
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
