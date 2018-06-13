@@ -5,15 +5,15 @@ package com.ashwinmenon.www.calcounter;
  */
 
 class Food {
-    private Integer calories;
-    private Integer proteins;
+    private int calories;
+    private int proteins;
     private final String name;
 
     public Food(String foodName) {
         this(foodName, 0, 0);
     }
 
-    public Food(String foodName, Integer foodCalories, Integer foodProteins) {
+    public Food(String foodName, int foodCalories, int foodProteins) {
         name = foodName;
         calories = foodCalories;
         proteins = foodProteins;
@@ -30,17 +30,17 @@ class Food {
         return ratio;
     }
 
-    public String getCalories() { return calories.toString(); }
-    public String getProteins() { return proteins.toString(); }
-    public Integer getCaloriesInt() { return calories; }
-    public Integer getProteinsInt() { return proteins; }
+    public String getCalories() { return String.valueOf(calories); }
+    public String getProteins() { return String.valueOf(proteins); }
+    public int getCaloriesInt() { return calories; }
+    public int getProteinsInt() { return proteins; }
     public String getName() { return name; }
-    public void setCalories(Integer val) { calories = val; }
-    public void setProteins(Integer val) { proteins = val; }
+    public void setCalories(int val) { calories = val; }
+    public void setProteins(int val) { proteins = val; }
 
     @Override
     public String toString() {
         String DELIM = "<";
-        return getName()+ DELIM +getCalories()+ DELIM +getProteins();
+        return getName()+ DELIM + getCalories() + DELIM + getProteins();
     }
 }

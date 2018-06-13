@@ -209,10 +209,10 @@ public class MainActivityFragment extends Fragment {
         TextView proteinsView = a.findViewById(R.id.proteins);
         TextView calsView = a.findViewById(R.id.calories);
         TextView ratioView = a.findViewById(R.id.avg);
-        Integer proteinSum = 0, calSum = 0, day;
-        Double ratio = 0.0;
+        int proteinSum = 0, calSum = 0;
+        double ratio = 0.0;
 
-        day = Math.max(0, foods.size() - daysToQuery);
+        int day = Math.max(0, foods.size() - daysToQuery);
 
         for(; day < foods.size(); day++) {
             for (Food f : foods.get(day)) {
@@ -222,16 +222,16 @@ public class MainActivityFragment extends Fragment {
         }
 
         if (displayFilter) {
-            proteinsView.setText(String.format("%.2f",(double)proteinSum/daysToQuery));
-            calsView.setText(String.format("%.2f",(double)calSum/daysToQuery));
+            proteinsView.setText(String.format("%.2f",(double) proteinSum/daysToQuery));
+            calsView.setText(String.format("%.2f",(double) calSum/daysToQuery));
         }
         else {
-            proteinsView.setText(proteinSum.toString());
-            calsView.setText(calSum.toString());
+            proteinsView.setText(String.valueOf(proteinSum));
+            calsView.setText(String.valueOf(calSum));
         }
 
         if (proteinSum != 0) {
-            ratio = (double)calSum/proteinSum;
+            ratio = (double) calSum/proteinSum;
         }
 
         ratioView.setText(String.format("%.2f",ratio));

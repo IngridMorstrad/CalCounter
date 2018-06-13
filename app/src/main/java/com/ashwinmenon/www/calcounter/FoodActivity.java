@@ -16,8 +16,8 @@ import java.util.List;
 public class FoodActivity extends AppCompatActivity {
 
     private ArrayAdapter <Food> dailyFoodAdapter;
-    private Integer proteinSum;
-    private Integer calsSum;
+    private int proteinSum;
+    private int calsSum;
     private List<Food> foodsForTheDay;
 
     @Override
@@ -68,11 +68,11 @@ public class FoodActivity extends AppCompatActivity {
                     String foodName = etFood.getText().toString();
 
                     EditText etProteins = findViewById(R.id.etProteins);
-                    Integer proteins = Integer.parseInt(etProteins.getText().toString());
+                    int proteins = Integer.parseInt(etProteins.getText().toString());
                     proteinSum += proteins;
 
                     EditText etCals = findViewById(R.id.etCals);
-                    Integer cals = Integer.parseInt(etCals.getText().toString());
+                    int cals = Integer.parseInt(etCals.getText().toString());
                     calsSum += cals;
 
                     etCals.setText("");
@@ -93,12 +93,12 @@ public class FoodActivity extends AppCompatActivity {
         TextView dailyProteinSum = findViewById(R.id.tvDailyProteins);
         TextView avgView = findViewById(R.id.tvDailyAverage);
 
-        dailyCalSum.setText(calsSum.toString());
-        dailyProteinSum.setText(proteinSum.toString());
-        avgView.setText(String.format("%.2f",calcAverage(calsSum,proteinSum)));
+        dailyCalSum.setText(String.valueOf(calsSum));
+        dailyProteinSum.setText(String.valueOf(proteinSum));
+        avgView.setText(String.format("%.2f", calcAverage(calsSum, proteinSum)));
     }
 
-    private Double calcAverage(int calsSum, int proteinSum) {
+    private double calcAverage(int calsSum, int proteinSum) {
         if (proteinSum == 0) return -1.0;
         return (double)calsSum/proteinSum;
     }
