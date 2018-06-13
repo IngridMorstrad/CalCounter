@@ -67,68 +67,6 @@ public class MainActivityFragment extends Fragment {
         }
     }
 
-    private void readItems() {
-        File filesDir = getActivity().getFilesDir();
-        File foodsFile = new File(filesDir, "foods.txt");
-        LineIterator iter;
-        foods = new ArrayList<>();
-        try {
-            iter = FileUtils.lineIterator(foodsFile);
-            while (iter.hasNext()) {
-                String fileData = iter.next();
-
-                System.out.println("FOODS: " + fileData);
-                if (fileData.length() >= 6 && fileData.substring(0,6).equals("<DATE>")) {
-                    foods.add(new ArrayList<>());
-                }
-                else {
-                    foods.get(foods.size() - 1).add(new Food(fileData));
-                }
-            }
-        } catch (ArrayIndexOutOfBoundsException | IOException e) {
-            foods = new ArrayList<>();
-        }
-        File calsFile = new File(filesDir, "cals.txt");
-        int currDatePos = -1, currFoodPos = 0;
-        try {
-            iter = FileUtils.lineIterator(calsFile);
-            while (iter.hasNext()) {
-                String fileData = iter.next();
-                System.out.println("CALS: " + fileData);
-                if (fileData.length() >= 6 && fileData.substring(0,6).equals("<DATE>")) {
-                    currDatePos++;
-                    currFoodPos = 0;
-                }
-                else {
-                    foods.get(currDatePos).get(currFoodPos).setCalories(Integer.parseInt(fileData));
-                    currFoodPos++;
-                }
-            }
-        } catch (IOException | ArrayIndexOutOfBoundsException e) {
-            // pass
-        }
-        File proteinsFile = new File(filesDir, "proteins.txt");
-        currDatePos = -1;
-        currFoodPos = 0;
-        try {
-            iter = FileUtils.lineIterator(proteinsFile);
-            while (iter.hasNext()) {
-                String fileData = iter.next();
-                if (fileData.length() >= 6 && fileData.substring(0,6).equals("<DATE>")) {
-                    currDatePos++;
-                    currFoodPos = 0;
-                }
-                else {
-                    foods.get(currDatePos).get(currFoodPos).setProteins(Integer.parseInt(fileData));
-                    currFoodPos++;
-                }
-            }
-        } catch (IOException | ArrayIndexOutOfBoundsException e) {
-            // pass
-        }
-
-    }
-
     private void writeItems() {
         File filesDir = getActivity().getFilesDir();
         File foodsFile = new File(filesDir, "foodsNew.txt");
@@ -190,18 +128,6 @@ public class MainActivityFragment extends Fragment {
                     intent.putExtra(POSITION, days.size() - 1 - position);
                     startActivity(intent);
                 });
-    }
-
-    private View getViewByPosition(int pos, ListView listView) {
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
-        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
-            return listView.getAdapter().getView(pos, null, listView);
-        } else {
-            final int childIndex = pos - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
     }
 
     private void updateDisplay() {
