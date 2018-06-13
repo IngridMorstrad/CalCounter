@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FoodActivity"
+            android:name=".FoodFragment"
             android:label="@string/title_activity_food"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"

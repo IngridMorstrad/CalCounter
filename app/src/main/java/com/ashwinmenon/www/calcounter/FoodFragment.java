@@ -1,8 +1,11 @@
 package com.ashwinmenon.www.calcounter;
 
-import android.content.Intent;
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,27 +16,35 @@ import android.widget.Toast;
 
 import java.util.List;
 
-public class FoodActivity extends AppCompatActivity {
+import lombok.NonNull;
 
+public class FoodFragment extends Fragment {
+
+    public static final String POSITION_KEY = "com.ashwinmenon.www.calcounter.POSITION";
     private ArrayAdapter <Food> dailyFoodAdapter;
     private int proteinSum;
     private int calsSum;
     private List<Food> foodsForTheDay;
+    private int position;
+
+    public void updatePosition(int position) {
+        this.position = position;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_food);
-        Intent intent = getIntent();
-
-        Integer pos = intent.getIntExtra(MainActivityFragment.POSITION, -1);
-        if (pos == -1) {
-            Toast T = Toast.makeText(this, "POSITION ERROR", Toast.LENGTH_LONG);
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            position = bundle.getInt(POSITION_KEY, -1);
+        }
+        if (position == -1) {
+            Toast T = Toast.makeText(getActivity(), "POSITION ERROR", Toast.LENGTH_LONG);
             T.show();
             return;
         }
 
-        foodsForTheDay = MainActivityFragment.foods.get(pos);
+        foodsForTheDay = MainActivityFragment.foods.get(position);
         proteinSum = 0;
         calsSum = 0;
 
@@ -42,9 +53,14 @@ public class FoodActivity extends AppCompatActivity {
             calsSum += food.getCaloriesInt();
         }
 
-        dailyFoodAdapter = new FoodAdapter(this, MainActivityFragment.foods.get(pos));
+        dailyFoodAdapter = new FoodAdapter(getActivity(), foodsForTheDay);
+    }
 
-        Button addFood = findViewById(R.id.btnAdd);
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_food, container, false);
 
         AdapterView.OnItemLongClickListener deleteItem = (parent, view, position, id) -> {
             calsSum -= foodsForTheDay.get(position).getCaloriesInt();
@@ -52,26 +68,27 @@ public class FoodActivity extends AppCompatActivity {
 
             // Refresh the adapter
             dailyFoodAdapter.remove(foodsForTheDay.get(position));
-            updateDailyViews();
+            updateDailyViews(rootView);
 
             // Return true consumes the long click event (marks it handled)
             return true;
         };
 
-        ListView lvFoods = findViewById(R.id.lvFoods);
+        ListView lvFoods = rootView.findViewById(R.id.lvFoods);
         lvFoods.setAdapter(dailyFoodAdapter);
         lvFoods.setOnItemLongClickListener(deleteItem);
 
+        Button addFood = rootView.findViewById(R.id.btnAdd);
         addFood.setOnClickListener(
                 v -> {
-                    EditText etFood = findViewById(R.id.etFood);
+                    EditText etFood = rootView.findViewById(R.id.etFood);
                     String foodName = etFood.getText().toString();
 
-                    EditText etProteins = findViewById(R.id.etProteins);
+                    EditText etProteins = rootView.findViewById(R.id.etProteins);
                     int proteins = Integer.parseInt(etProteins.getText().toString());
                     proteinSum += proteins;
 
-                    EditText etCals = findViewById(R.id.etCals);
+                    EditText etCals = rootView.findViewById(R.id.etCals);
                     int cals = Integer.parseInt(etCals.getText().toString());
                     calsSum += cals;
 
@@ -81,17 +98,19 @@ public class FoodActivity extends AppCompatActivity {
 
                     dailyFoodAdapter.add(new Food(foodName, cals, proteins));
 
-                    updateDailyViews();
+                    updateDailyViews(rootView);
                 }
         );
 
-        updateDailyViews();
+        updateDailyViews(rootView);
+
+        return rootView;
     }
 
-    private void updateDailyViews() {
-        TextView dailyCalSum = findViewById(R.id.tvDailyCals);
-        TextView dailyProteinSum = findViewById(R.id.tvDailyProteins);
-        TextView avgView = findViewById(R.id.tvDailyAverage);
+    private void updateDailyViews(View rootView) {
+        TextView dailyCalSum = rootView.findViewById(R.id.tvDailyCals);
+        TextView dailyProteinSum = rootView.findViewById(R.id.tvDailyProteins);
+        TextView avgView = rootView.findViewById(R.id.tvDailyAverage);
 
         dailyCalSum.setText(String.valueOf(calsSum));
         dailyProteinSum.setText(String.valueOf(proteinSum));
@@ -102,5 +121,4 @@ public class FoodActivity extends AppCompatActivity {
         if (proteinSum == 0) return -1.0;
         return (double)calsSum/proteinSum;
     }
-
 }

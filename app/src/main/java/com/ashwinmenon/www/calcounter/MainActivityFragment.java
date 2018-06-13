@@ -2,7 +2,6 @@ package com.ashwinmenon.www.calcounter;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -44,6 +43,7 @@ public class MainActivityFragment extends Fragment {
     static List< ArrayList <Food> > foods;
     private ArrayAdapter<String> daysAdapter;
     private ListView lvItems;
+    private OnDaySelectedListener mCallback;
 
     private void readNewItems() {
         File filesDir = getActivity().getFilesDir();
@@ -120,27 +120,41 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    public interface OnDaySelectedListener {
+        void onDaySelected(int position);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = ((OnDaySelectedListener) activity);
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnDaySelectedListener");
+        }
+    }
+
     // Add an ItemClickListener to start an activity where we can add foods for the day clicked
     private void setupListViewListener() {
         lvItems.setOnItemClickListener(
                 (parent, view, position, id) -> {
-                    Intent intent = new Intent(getActivity(), FoodActivity.class);
-                    intent.putExtra(POSITION, days.size() - 1 - position);
-                    startActivity(intent);
+                    mCallback.onDaySelected(days.size() - 1 - position);
                 });
     }
 
     private void updateDisplay() {
-        Activity a = getActivity();
-        TextView proteinsView = a.findViewById(R.id.proteins);
-        TextView calsView = a.findViewById(R.id.calories);
-        TextView ratioView = a.findViewById(R.id.avg);
+        Activity activity = getActivity();
+        TextView proteinsView = activity.findViewById(R.id.proteins);
+        TextView calsView = activity.findViewById(R.id.calories);
+        TextView ratioView = activity.findViewById(R.id.avg);
         int proteinSum = 0, calSum = 0;
         double ratio = 0.0;
 
-        int day = Math.max(0, foods.size() - daysToQuery);
-
-        for(; day < foods.size(); day++) {
+        for(int day = Math.max(0, foods.size() - daysToQuery); day < foods.size(); day++) {
             for (Food f : foods.get(day)) {
                 proteinSum += f.getProteinsInt();
                 calSum += f.getCaloriesInt();

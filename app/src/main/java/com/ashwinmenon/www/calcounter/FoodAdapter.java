@@ -17,7 +17,7 @@ import java.util.List;
 
 class FoodAdapter extends ArrayAdapter<Food> {
 
-    public FoodAdapter(Activity context, List<Food> w) {
+    FoodAdapter(Activity context, List<Food> w) {
         super(context, 0, w);
     }
 
