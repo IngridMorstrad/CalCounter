@@ -3,7 +3,7 @@ package com.ashwinmenon.www.calcounter;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -16,15 +16,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Fragment newFragment = new MainActivityFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack
-        transaction.add(R.id.main_container, newFragment);
+        if (savedInstanceState == null) {
+            Fragment newFragment = new MainActivityFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-        // Commit the transaction
-        transaction.commit();
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack
+            transaction.add(R.id.main_container, newFragment);
+
+            // Commit the transaction
+            transaction.commit();
+        }
 }
 
     @Override

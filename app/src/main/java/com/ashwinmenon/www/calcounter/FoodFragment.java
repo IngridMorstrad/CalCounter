@@ -2,7 +2,8 @@ package com.ashwinmenon.www.calcounter;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ashwinmenon.www.calcounter.db.AppDatabase;
+import com.ashwinmenon.www.calcounter.db.Food;
+import com.ashwinmenon.www.calcounter.db.FoodDao;
 
 import java.util.List;
 
@@ -44,13 +49,13 @@ public class FoodFragment extends Fragment {
             return;
         }
 
-        foodsForTheDay = MainActivityFragment.foods.get(position);
+        foodsForTheDay = MainActivityFragment.foodsForAllDays.get(position);
         proteinSum = 0;
         calsSum = 0;
 
         for (Food food: foodsForTheDay) {
-            proteinSum += food.getProteinsInt();
-            calsSum += food.getCaloriesInt();
+            proteinSum += food.getProteins();
+            calsSum += food.getCalories();
         }
 
         dailyFoodAdapter = new FoodAdapter(getActivity(), foodsForTheDay);
@@ -63,8 +68,8 @@ public class FoodFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_food, container, false);
 
         AdapterView.OnItemLongClickListener deleteItem = (parent, view, position, id) -> {
-            calsSum -= foodsForTheDay.get(position).getCaloriesInt();
-            proteinSum -= foodsForTheDay.get(position).getProteinsInt();
+            calsSum -= foodsForTheDay.get(position).getCalories();
+            proteinSum -= foodsForTheDay.get(position).getProteins();
 
             // Refresh the adapter
             dailyFoodAdapter.remove(foodsForTheDay.get(position));
@@ -96,7 +101,26 @@ public class FoodFragment extends Fragment {
                     etProteins.setText("");
                     etFood.setText("");
 
-                    dailyFoodAdapter.add(new Food(foodName, cals, proteins));
+                    Log.v("FoodFragment", "Day id is: " + MainActivityFragment.days.get(position).getDayId());
+                    Food newFood = new Food(foodName, cals, proteins, MainActivityFragment.days.get(position).getDayId());
+                    dailyFoodAdapter.add(newFood);
+
+                    AppDatabase db = AppDatabase.getDatabase(getActivity().getApplicationContext());
+                    // DayDao dayDao = db.dayDao();
+                    FoodDao foodDao = db.foodDao();
+                    Thread t = new Thread(() -> {
+                        /*
+                        List<Day> myDays = dayDao.getAll();
+                        for (Day d : myDays) {
+                            Log.v("FF", "days are: " + d.getDay_id());
+                        }
+                        */
+                        foodDao.insertAll(newFood);
+                        List<Food> fods = foodDao.getAll();
+                        Log.v("FF", "Food size is: " + fods.size());
+                    });
+                    t.start();
+
 
                     updateDailyViews(rootView);
                 }

@@ -3,12 +3,11 @@ package com.ashwinmenon.www.calcounter;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ashwinmenon.www.calcounter.db.Food;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
@@ -19,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -34,14 +35,14 @@ public class ChartFragment extends Fragment {
         super.onCreate(savedInstanceState);
         List<Entry> entries = new ArrayList<>();
 
-        int sz = MainActivityFragment.foods.size();
-        int daysToAverageOver = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_average),"8"));
+        int sz = MainActivityFragment.foodsForAllDays.size();
+        int daysToAverageOver = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_average), "8"));
         int daysToDisplay = 14;
         int currCalSum = 0;
-        for (int i = 1; i <= Math.min(sz,daysToAverageOver*daysToDisplay); i++) {
-            currCalSum += sumOf(MainActivityFragment.foods.get(sz-i));
-            if (i%daysToAverageOver == 0) {
-                entries.add(new Entry(daysToDisplay-i/daysToAverageOver+1, (float)currCalSum/daysToAverageOver));
+        for (int i = 1; i <= Math.min(sz, daysToAverageOver * daysToDisplay); i++) {
+            currCalSum += sumOf(MainActivityFragment.foodsForAllDays.get(sz - i));
+            if (i % daysToAverageOver == 0) {
+                entries.add(new Entry(daysToDisplay - i / daysToAverageOver + 1, (float) currCalSum / daysToAverageOver));
                 currCalSum = 0;
             }
         }
@@ -67,7 +68,7 @@ public class ChartFragment extends Fragment {
 
     private int sumOf(List<Food> integers) {
         int s = 0;
-        for (Food f: integers) s+=f.getCaloriesInt();
+        for (Food f : integers) s += f.getCalories();
         return s;
     }
 }

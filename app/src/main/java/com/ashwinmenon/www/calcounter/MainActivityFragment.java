@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,21 +14,24 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
+import com.ashwinmenon.www.calcounter.db.AppDatabase;
+import com.ashwinmenon.www.calcounter.db.Day;
+import com.ashwinmenon.www.calcounter.db.DayDao;
+import com.ashwinmenon.www.calcounter.db.Food;
+import com.ashwinmenon.www.calcounter.db.FoodDao;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * A placeholder fragment containing a simple view.
+ * Main fragment that displays list of dates.
  */
 public class MainActivityFragment extends Fragment {
 
@@ -35,93 +39,83 @@ public class MainActivityFragment extends Fragment {
     // TODO: USDA Food API
     // TODO: Ability to add multiple of same food
     // TODO: Add sort by cals/proteins/ratio & asc/desc
-    // TODO: Add option to colour foods by ratio/calorie/protein
-    final static String POSITION = "com.ashwinmenon.www.CalCounter.POS";
+    // TODO: Add option to colour foodsForAllDays by ratio/calorie/protein
     static int daysToQuery;
-    static boolean displayFilter;
-    private List<String> days;
-    static List< ArrayList <Food> > foods;
-    private ArrayAdapter<String> daysAdapter;
+    static boolean displayNutritionAverages;
+    static List<List<Food>> foodsForAllDays = new ArrayList<>();
+    private ArrayAdapter<Day> daysAdapter;
     private ListView lvItems;
     private OnDaySelectedListener mCallback;
-
-    private void readNewItems() {
-        File filesDir = getActivity().getFilesDir();
-        File foodsFile = new File(filesDir, "foodsNew.txt");
-        LineIterator iter;
-        foods = new ArrayList<>();
-        try {
-            iter = FileUtils.lineIterator(foodsFile);
-            while (iter.hasNext()) {
-                String fileData = iter.next();
-                if (fileData.length() >= 6 && fileData.substring(0,6).equals("<DATE>")) {
-                    foods.add(new ArrayList<>());
-                }
-                else {
-                    String[] foodDetails = fileData.split("[<]+");
-                    foods.get(foods.size() - 1).add(new Food(foodDetails[0], Integer.parseInt(foodDetails[1]), Integer.parseInt(foodDetails[2])));
-                }
-            }
-        } catch (ArrayIndexOutOfBoundsException | IOException e) {
-            foods = new ArrayList<>();
-        }
-    }
-
-    private void writeItems() {
-        File filesDir = getActivity().getFilesDir();
-        File foodsFile = new File(filesDir, "foodsNew.txt");
-        try {
-            FileUtils.writeStringToFile(foodsFile, "");
-            for (ArrayList<Food> dayFoods: foods) {
-                FileUtils.writeStringToFile(foodsFile,"<DATE>\n",true);
-                FileUtils.writeLines(foodsFile,dayFoods,true);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    static List<Day> days = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        SimpleDateFormat curFormatter = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
         Date startDay, currDay;
-        GregorianCalendar gCal;
-
-        startDay = new Date();
-        currDay = new Date();
-        days = new ArrayList<>();
+        GregorianCalendar gregorianCalendar;
 
         try {
-            String startDate = "30/05/2018";
-            startDay = curFormatter.parse(startDate);
+            String startDate = "13/10/2020";
+            startDay = dateFormatter.parse(startDate);
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+
         try {
-            currDay = curFormatter.parse(curFormatter.format(Calendar.getInstance().getTime()));
+            currDay = dateFormatter.parse(dateFormatter.format(Calendar.getInstance().getTime()));
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
-        gCal = new GregorianCalendar();
-        gCal.setTime(startDay);
-        for (; !gCal.getTime().after(currDay); gCal.add(Calendar.DATE, 1)) {
-            days.add(0,curFormatter.format(gCal.getTime()));
+        gregorianCalendar = new GregorianCalendar();
+
+        for (gregorianCalendar.setTime(startDay); !gregorianCalendar.getTime().after(currDay); gregorianCalendar.add(Calendar.DATE, 1)) {
+            Date time = gregorianCalendar.getTime();
+            int currentTime = (int) (time.getTime() / 1000);
+            Day day = new Day(currentTime, dateFormatter.format(gregorianCalendar.getTime()));
+            days.add(day);
         }
 
-        readNewItems();
+        AppDatabase db = AppDatabase.getDatabase(getActivity().getApplicationContext());
+        DayDao dayDao = db.dayDao();
+        FoodDao foodDao = db.foodDao();
+        foodsForAllDays = new ArrayList<>();
+        new Thread(() -> {
+            List<Day> daysInDB = dayDao.getAll();
+            Set<Integer> dayIDsInDB = new HashSet<>();
+            for (Day dayInDB : daysInDB) {
+                dayIDsInDB.add(dayInDB.dayId);
+            }
+            List<Day> missingDays = new ArrayList<>();
+            for (Day day : days) {
+                if (!dayIDsInDB.contains(day.dayId)) {
+                    missingDays.add(day);
+                }
+            }
+            dayDao.insertAll(missingDays.toArray(new Day[0]));
+            List<Food> foods = foodDao.getAll();
+            Log.v("MAF", "Food size: " + foods.size());
+            for (Food f : foods) {
+                Log.v("MAF", "Foods are: " + f.getName());
+            }
+            for (Day day : days) {
+                Log.v("MainActivityFragment", "Day ID is: " + day.getDayId());
+                foodsForAllDays.add(foodDao.loadAllByDayId(day.getDayId()));
+            }
+        }).start();
 
-        while (foods.size() < days.size()) foods.add(new ArrayList<>());
+        displayNutritionAverages = false;
 
-        displayFilter = false;
-
+        new Thread(() -> {
+            Log.v("MainActivityFragment", "food dao is: " + foodDao.getAll());
+        }).start();
         daysAdapter = new DayAdapter(getActivity(), days);
 
         super.onCreate(savedInstanceState);
     }
 
     public interface OnDaySelectedListener {
-        void onDaySelected(int position);
+        void onDaySelected(int dayPosition);
     }
 
     @Override
@@ -138,7 +132,7 @@ public class MainActivityFragment extends Fragment {
         }
     }
 
-    // Add an ItemClickListener to start an activity where we can add foods for the day clicked
+    // Add an ItemClickListener to start an activity where we can add foodsForAllDays for the day clicked
     private void setupListViewListener() {
         lvItems.setOnItemClickListener(
                 (parent, view, position, id) -> {
@@ -154,27 +148,26 @@ public class MainActivityFragment extends Fragment {
         int proteinSum = 0, calSum = 0;
         double ratio = 0.0;
 
-        for(int day = Math.max(0, foods.size() - daysToQuery); day < foods.size(); day++) {
-            for (Food f : foods.get(day)) {
-                proteinSum += f.getProteinsInt();
-                calSum += f.getCaloriesInt();
+        for (int day = Math.max(0, foodsForAllDays.size() - daysToQuery); day < foodsForAllDays.size(); day++) {
+            for (Food food : foodsForAllDays.get(day)) {
+                proteinSum += food.getProteins();
+                calSum += food.getCalories();
             }
         }
 
-        if (displayFilter) {
-            proteinsView.setText(String.format("%.2f",(double) proteinSum/daysToQuery));
-            calsView.setText(String.format("%.2f",(double) calSum/daysToQuery));
-        }
-        else {
+        if (displayNutritionAverages) {
+            proteinsView.setText(String.format("%.2f", (double) proteinSum / daysToQuery));
+            calsView.setText(String.format("%.2f", (double) calSum / daysToQuery));
+        } else {
             proteinsView.setText(String.valueOf(proteinSum));
             calsView.setText(String.valueOf(calSum));
         }
 
         if (proteinSum != 0) {
-            ratio = (double) calSum/proteinSum;
+            ratio = (double) calSum / proteinSum;
         }
 
-        ratioView.setText(String.format("%.2f",ratio));
+        ratioView.setText(String.format("%.2f", ratio));
         daysAdapter.notifyDataSetChanged();
     }
 
@@ -182,9 +175,23 @@ public class MainActivityFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        daysToQuery = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getActivity().getString(R.string.key_days),"7"));
+        daysToQuery = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getActivity().getString(R.string.key_days), "7"));
         updateDisplay();
-        writeItems();
+
+        FoodDao foodDao = AppDatabase.getDatabase(getActivity().getApplicationContext()).foodDao();
+        int dayIndex = 0;
+        for (List<Food> foodForDay : foodsForAllDays) {
+            for (Food food : foodForDay) {
+                final String foodName = food.getName();
+                final int foodCals = food.getCalories();
+                final int foodProteins = food.getProteins();
+                final int dayId = days.get(dayIndex).getDayId();
+                final Food newFood = new Food(foodName, foodCals, foodProteins, dayId);
+                new Thread(() -> foodDao.updateAll(newFood)).start();
+            }
+            dayIndex++;
+        }
+
     }
 
     @Override
@@ -198,7 +205,7 @@ public class MainActivityFragment extends Fragment {
         View cals = rootView.findViewById(R.id.calories);
 
         cals.setOnClickListener(v -> {
-            displayFilter = !displayFilter;
+            displayNutritionAverages = !displayNutritionAverages;
             updateDisplay();
         });
 
