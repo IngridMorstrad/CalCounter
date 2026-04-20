@@ -42,13 +42,13 @@ dependencies {
     api group: 'commons-io', name: 'commons-io', version: '2.6'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
-    def room_version = "1.1.0" // or, for latest rc, use "1.1.1-rc1"
-    implementation 'androidx.room:room-runtime:2.0.0'
-    annotationProcessor 'androidx.room:room-compiler:2.0.0'
+    def room_version = "2.6.1"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
     // optional - RxJava support for Room
-    implementation 'androidx.room:room-rxjava2:2.0.0'
+    implementation "androidx.room:room-rxjava2:$room_version"
     // optional - Guava support for Room, including Optional and ListenableFuture
-    implementation 'androidx.room:room-guava:2.0.0'
+    implementation "androidx.room:room-guava:$room_version"
     // Test helpers
-    testImplementation 'androidx.room:room-testing:2.0.0'
+    testImplementation "androidx.room:room-testing:$room_version"
 }
