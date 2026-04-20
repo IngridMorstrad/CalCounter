@@ -34,12 +34,12 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    testImplementation 'junit:junit:4.12'
-    implementation 'org.projectlombok:lombok:1.18.12'
-    annotationProcessor 'org.projectlombok:lombok:1.18.12'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
-    api group: 'commons-io', name: 'commons-io', version: '2.6'
+    testImplementation 'junit:junit:4.13.2'
+    implementation 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    api group: 'commons-io', name: 'commons-io', version: '2.15.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     def room_version = "1.1.0" // or, for latest rc, use "1.1.1-rc1"
