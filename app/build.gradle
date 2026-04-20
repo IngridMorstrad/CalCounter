@@ -41,6 +41,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     api group: 'commons-io', name: 'commons-io', version: '2.6'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'androidx.preference:preference:1.2.1'
 
     def room_version = "1.1.0" // or, for latest rc, use "1.1.1-rc1"
     implementation 'androidx.room:room-runtime:2.0.0'
