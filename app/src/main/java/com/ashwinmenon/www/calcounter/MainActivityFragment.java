@@ -1,9 +1,10 @@
 package com.ashwinmenon.www.calcounter;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.content.Context;
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
@@ -119,15 +120,15 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = ((OnDaySelectedListener) activity);
+            mCallback = ((OnDaySelectedListener) context);
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnDaySelectedListener");
         }
     }

@@ -1,6 +1,6 @@
 package com.ashwinmenon.www.calcounter;
 
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import android.util.Log;
