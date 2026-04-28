@@ -1,5 +1,6 @@
 package com.ashwinmenon.www.calcounter;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.fragment.app.Fragment;
 import android.os.Bundle;
@@ -141,7 +142,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void updateDisplay() {
-        android.app.Activity activity = getActivity();
+        Activity activity = getActivity();
         TextView proteinsView = activity.findViewById(R.id.proteins);
         TextView calsView = activity.findViewById(R.id.calories);
         TextView ratioView = activity.findViewById(R.id.avg);
