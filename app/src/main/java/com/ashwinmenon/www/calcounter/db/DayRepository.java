@@ -24,4 +24,8 @@ public class DayRepository {
     public void insert(Day day) {
         executor.execute(() -> mDayDao.insert(day));
     }
+
+    public void shutdown() {
+        executor.shutdown();
+    }
 }
