@@ -1,7 +1,7 @@
 package com.ashwinmenon.www.calcounter;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         if (savedInstanceState == null) {
             Fragment newFragment = new MainActivityFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
             // Replace whatever is in the fragment_container view with this fragment,
             // and add the transaction to the back stack
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         if (id == R.id.action_settings) {
             // Create new fragment and transaction
             Fragment newFragment = new SettingsFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
             // Replace whatever is in the fragment_container view with this fragment,
             // and add the transaction to the back stack
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         }
         else if (id == R.id.action_chart) {
             Fragment newFragment = new ChartFragment(new LineData(), new Description());
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
             transaction.replace(R.id.main_container, newFragment);
             transaction.addToBackStack(null);
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     @Override
     public void onDaySelected(int position) {
-        FoodFragment foodFragment = (FoodFragment) getFragmentManager().findFragmentById(R.id.food_fragment);
+        FoodFragment foodFragment = (FoodFragment) getSupportFragmentManager().findFragmentById(R.id.food_fragment);
         if (foodFragment != null) {
             // If article frag is available, we're in two-pane layout...
 
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             args.putInt(FoodFragment.POSITION_KEY, position);
             newFragment.setArguments(args);
 
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
             // Replace whatever is in the fragment_container view with this fragment,
             // and add the transaction to the back stack so the user can navigate back

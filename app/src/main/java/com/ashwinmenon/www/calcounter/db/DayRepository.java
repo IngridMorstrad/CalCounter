@@ -1,13 +1,15 @@
 package com.ashwinmenon.www.calcounter.db;
 
 import android.app.Application;
-import android.os.AsyncTask;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DayRepository {
     private DayDao mDayDao;
     private List<Day> mAllDays;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     DayRepository(Application application) {
         AppDatabase db = AppDatabase.getDatabase(application);
@@ -19,23 +21,7 @@ public class DayRepository {
         return mAllDays;
     }
 
-    public void insert (Day word) {
-        new insertAsyncTask(mDayDao).execute(word);
-    }
-
-    private static class insertAsyncTask extends AsyncTask<Day, Void, Void> {
-
-        private DayDao mAsyncTaskDao;
-
-        insertAsyncTask(DayDao dao) {
-            mAsyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final Day... params) {
-            mAsyncTaskDao.insert(params[0]);
-            return null;
-        }
+    public void insert(Day day) {
+        executor.execute(() -> mDayDao.insert(day));
     }
 }
-
