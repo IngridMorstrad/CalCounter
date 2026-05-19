@@ -14,3 +14,7 @@ A simple Android calorie counter app built with Java and Room database.
 - Java
 - Android Room (SQLite)
 - MPAndroidChart
+
+## Getting Started
+
+Clone the repository and open the project in Android Studio to build and run.
