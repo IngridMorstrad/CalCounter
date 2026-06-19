@@ -9,6 +9,10 @@ A simple Android calorie counter app built with Java and Room database.
 - View calorie history with charts
 - Configurable settings
 
+## Getting Started
+
+Clone the repository and open the project in Android Studio to build and run the app.
+
 ## Tech Stack
 
 - Java
