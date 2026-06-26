@@ -1,6 +1,6 @@
 # CalCounter
 
-A simple Android calorie counter app built with Java and Room database.
+**CalCounter is an Android app that lets you log meals, track your daily calorie intake, and visualize your eating habits over time.**
 
 ## Features
 
