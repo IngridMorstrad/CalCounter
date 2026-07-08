@@ -1,6 +1,6 @@
 # CalCounter
 
-A simple Android calorie counter app built with Java and Room database.
+A simple Android calorie counter app built with Java and Room database. Track your nutrition goals with ease.
 
 ## Features
 
