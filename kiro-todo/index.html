@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kiro Tasks</title>
+<style>
+  :root {
+    --bg: #0b0b10;
+    --bg-2: #121219;
+    --panel: #15151f;
+    --panel-2: #1b1b27;
+    --border: #262635;
+    --text: #e8e8f0;
+    --muted: #8b8ba3;
+    --violet: #8b5cf6;
+    --violet-2: #a78bfa;
+    --violet-glow: rgba(139, 92, 246, 0.45);
+    --green: #34d399;
+    --danger: #f87171;
+    --radius: 14px;
+    font-size: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(1100px 600px at 15% -10%, rgba(139, 92, 246, 0.18), transparent 60%),
+      radial-gradient(900px 600px at 100% 0%, rgba(99, 102, 241, 0.14), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 56px 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  /* ---------- Header ---------- */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+
+  .ghost {
+    width: 54px;
+    height: 54px;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 6px 18px var(--violet-glow));
+    animation: float 3.6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .titles h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(100deg, #fff 10%, var(--violet-2) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .titles p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 2px;
+  }
+
+  /* ---------- Card ---------- */
+  .card {
+    margin-top: 26px;
+    background: linear-gradient(180deg, var(--panel), var(--bg-2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+
+  /* ---------- Input row ---------- */
+  .input-row {
+    display: flex;
+    gap: 10px;
+    padding: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  #new-task {
+    flex: 1;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 15px;
+    color: var(--text);
+    font-size: 0.98rem;
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  #new-task::placeholder { color: #5f5f78; }
+  #new-task:focus {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+  }
+
+  #add-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 0 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--violet), #6d28d9);
+    box-shadow: 0 6px 18px var(--violet-glow);
+    transition: transform 0.12s, box-shadow 0.18s, filter 0.18s;
+    white-space: nowrap;
+  }
+  #add-btn:hover { filter: brightness(1.08); box-shadow: 0 8px 24px var(--violet-glow); }
+  #add-btn:active { transform: translateY(1px) scale(0.98); }
+
+  /* ---------- Filters ---------- */
+  .filters {
+    display: flex;
+    gap: 6px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    padding: 7px 15px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.16s;
+  }
+  .filter:hover { color: var(--text); background: var(--panel-2); }
+  .filter.active {
+    color: #fff;
+    background: rgba(139, 92, 246, 0.16);
+    border-color: rgba(139, 92, 246, 0.5);
+  }
+
+  /* ---------- List ---------- */
+  #list {
+    list-style: none;
+    max-height: 46vh;
+    overflow-y: auto;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 18px;
+    border-bottom: 1px solid var(--border);
+    animation: pop 0.24s ease;
+  }
+  .item:last-child { border-bottom: none; }
+
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .check {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+    border-radius: 7px;
+    border: 2px solid #3a3a4d;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.16s;
+  }
+  .check:hover { border-color: var(--violet-2); }
+  .check svg { width: 12px; height: 12px; opacity: 0; transform: scale(0.5); transition: all 0.16s; }
+
+  .item.done .check {
+    background: linear-gradient(135deg, var(--violet), #6d28d9);
+    border-color: transparent;
+  }
+  .item.done .check svg { opacity: 1; transform: scale(1); }
+
+  .label {
+    flex: 1;
+    font-size: 0.98rem;
+    transition: color 0.16s;
+    word-break: break-word;
+  }
+  .item.done .label {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--violet-2);
+  }
+
+  .del {
+    border: none;
+    background: transparent;
+    color: #4d4d63;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 6px;
+    border-radius: 8px;
+    line-height: 1;
+    transition: all 0.16s;
+    opacity: 0;
+  }
+  .item:hover .del { opacity: 1; }
+  .del:hover { color: var(--danger); background: rgba(248, 113, 113, 0.12); }
+
+  /* ---------- Empty state ---------- */
+  .empty {
+    text-align: center;
+    padding: 46px 20px;
+    color: var(--muted);
+  }
+  .empty .big { font-size: 2.4rem; margin-bottom: 10px; opacity: 0.7; }
+  .empty p { font-size: 0.92rem; }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  #clear-done {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: all 0.16s;
+  }
+  #clear-done:hover { color: var(--danger); background: rgba(248, 113, 113, 0.1); }
+
+  .brand-foot {
+    margin-top: 18px;
+    text-align: center;
+    color: #4a4a5e;
+    font-size: 0.78rem;
+  }
+  .brand-foot span { color: var(--violet-2); }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <svg class="ghost" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#a78bfa"/>
+            <stop offset="1" stop-color="#7c3aed"/>
+          </linearGradient>
+        </defs>
+        <path d="M12 30a20 20 0 0 1 40 0v24l-6.5-5-6.5 5-6.5-5L26 54l-6.5-5L12 54V30z" fill="url(#g)"/>
+        <circle cx="25" cy="30" r="3.4" fill="#0b0b10"/>
+        <circle cx="39" cy="30" r="3.4" fill="#0b0b10"/>
+      </svg>
+      <div class="titles">
+        <h1>Kiro Tasks</h1>
+        <p>Ship your day, one task at a time.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="input-row">
+        <input id="new-task" type="text" placeholder="What needs to get done?" autocomplete="off" />
+        <button id="add-btn">Add</button>
+      </div>
+
+      <div class="filters">
+        <button class="filter active" data-filter="all">All</button>
+        <button class="filter" data-filter="active">Active</button>
+        <button class="filter" data-filter="completed">Completed</button>
+      </div>
+
+      <ul id="list"></ul>
+
+      <div class="footer">
+        <span id="count">0 tasks left</span>
+        <button id="clear-done">Clear completed</button>
+      </div>
+    </div>
+
+    <div class="brand-foot">Powered by <span>Kiro</span> &middot; your tasks live in your browser</div>
+  </div>
+
+<script>
+  const KEY = "kiro.tasks.v1";
+  const listEl = document.getElementById("list");
+  const inputEl = document.getElementById("new-task");
+  const addBtn = document.getElementById("add-btn");
+  const countEl = document.getElementById("count");
+  const clearBtn = document.getElementById("clear-done");
+  const filterBtns = [...document.querySelectorAll(".filter")];
+
+  let tasks = load();
+  let filter = "all";
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || []; }
+    catch { return []; }
+  }
+  function save() { localStorage.setItem(KEY, JSON.stringify(tasks)); }
+
+  function addTask(text) {
+    const t = text.trim();
+    if (!t) return;
+    tasks.unshift({ id: Date.now() + Math.random(), text: t, done: false });
+    save();
+    render();
+  }
+
+  function toggle(id) {
+    const t = tasks.find(x => x.id === id);
+    if (t) { t.done = !t.done; save(); render(); }
+  }
+
+  function remove(id) {
+    tasks = tasks.filter(x => x.id !== id);
+    save();
+    render();
+  }
+
+  function clearCompleted() {
+    tasks = tasks.filter(x => !x.done);
+    save();
+    render();
+  }
+
+  const CHECK = '<svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function render() {
+    const visible = tasks.filter(t =>
+      filter === "all" ? true : filter === "active" ? !t.done : t.done
+    );
+
+    listEl.innerHTML = "";
+
+    if (visible.length === 0) {
+      const li = document.createElement("li");
+      li.className = "empty";
+      li.innerHTML = '<div class="big">&#128075;</div><p>' +
+        (tasks.length === 0 ? "No tasks yet. Add your first one above!" : "Nothing here in this view.") +
+        '</p>';
+      listEl.appendChild(li);
+    } else {
+      for (const t of visible) {
+        const li = document.createElement("li");
+        li.className = "item" + (t.done ? " done" : "");
+        li.dataset.id = t.id;
+
+        const check = document.createElement("div");
+        check.className = "check";
+        check.innerHTML = CHECK;
+        check.onclick = () => toggle(t.id);
+
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = t.text;
+
+        const del = document.createElement("button");
+        del.className = "del";
+        del.innerHTML = "&#10005;";
+        del.title = "Delete";
+        del.onclick = () => remove(t.id);
+
+        li.append(check, label, del);
+        listEl.appendChild(li);
+      }
+    }
+
+    const left = tasks.filter(t => !t.done).length;
+    countEl.textContent = left + (left === 1 ? " task left" : " tasks left");
+  }
+
+  addBtn.onclick = () => { addTask(inputEl.value); inputEl.value = ""; inputEl.focus(); };
+  inputEl.addEventListener("keydown", e => {
+    if (e.key === "Enter") { addTask(inputEl.value); inputEl.value = ""; }
+  });
+  clearBtn.onclick = clearCompleted;
+  filterBtns.forEach(b => b.onclick = () => {
+    filter = b.dataset.filter;
+    filterBtns.forEach(x => x.classList.toggle("active", x === b));
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>

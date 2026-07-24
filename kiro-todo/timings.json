@@ -1,0 +1,55 @@
+{
+  "lead_in": 0.6,
+  "gap": 0.75,
+  "total": 68.952,
+  "beats": [
+    {
+      "index": 0,
+      "speech": 8.88,
+      "duration": 9.63,
+      "text": "Welcome to Kiro Tasks, a clean, browser based to-do app with Kiro's signature look. Let's take a quick tour."
+    },
+    {
+      "index": 1,
+      "speech": 5.184,
+      "duration": 5.934,
+      "text": "Adding a task is simple. Just type what's on your mind, and press Add."
+    },
+    {
+      "index": 2,
+      "speech": 6.504,
+      "duration": 7.254,
+      "text": "You can queue up as many tasks as you need. Each new one drops neatly to the top of your list."
+    },
+    {
+      "index": 3,
+      "speech": 8.016,
+      "duration": 8.766,
+      "text": "Finished something? Click the checkbox to mark it done. It gets crossed off with a satisfying Kiro purple check."
+    },
+    {
+      "index": 4,
+      "speech": 7.824,
+      "duration": 8.574,
+      "text": "Use the filters to focus. Active hides what's done, while Completed shows only the tasks you've finished."
+    },
+    {
+      "index": 5,
+      "speech": 8.376,
+      "duration": 9.126,
+      "text": "The footer keeps a live count of what's left, and hovering over a task reveals a delete button to remove it entirely."
+    },
+    {
+      "index": 6,
+      "speech": 10.056,
+      "duration": 10.806,
+      "text": "Clear completed wipes out finished tasks in a single click. And because everything is saved to your browser, your list is still here when you come back."
+    },
+    {
+      "index": 7,
+      "speech": 7.512,
+      "duration": 8.262,
+      "text": "That's Kiro Tasks. Simple, fast, and ready to help you ship your day. Thanks for watching!"
+    }
+  ]
+}
