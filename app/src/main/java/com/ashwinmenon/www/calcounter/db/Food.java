@@ -5,52 +5,51 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import static androidx.room.ForeignKey.CASCADE;
-
-/**
- * Created by TheAshman on 1/26/2017.
- */
 
 @Entity(foreignKeys = @ForeignKey(entity = Day.class,
         parentColumns = "dayId",
         childColumns = "dayId",
         onDelete = CASCADE))
-@Getter
-@Setter
 public class Food {
     @PrimaryKey(autoGenerate = true)
-    int food_id;
+    public int food_id;
     @ColumnInfo(name = "name")
-    String name;
+    public String name;
     @ColumnInfo(name = "calories")
-    int calories;
+    public int calories;
     @ColumnInfo(name = "proteins")
-    int proteins;
+    public int proteins;
     @ColumnInfo(name = "dayId")
-    int dayId;
+    public int dayId;
 
     public Food() {
         this.name = "default";
     }
 
-    public Food(String name, int calories, int proteins, int day_id) {
+    public Food(String name, int calories, int proteins, int dayId) {
         this.name = name;
         this.calories = calories;
         this.proteins = proteins;
-        this.dayId = day_id;
+        this.dayId = dayId;
     }
 
+    public int getFood_id() { return food_id; }
+    public void setFood_id(int food_id) { this.food_id = food_id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public int getCalories() { return calories; }
+    public void setCalories(int calories) { this.calories = calories; }
+    public int getProteins() { return proteins; }
+    public void setProteins(int proteins) { this.proteins = proteins; }
+    public int getDayId() { return dayId; }
+    public void setDayId(int dayId) { this.dayId = dayId; }
+
     public String getRatio() {
-        String ratio;
         if (proteins == 0) {
-            ratio = "Get some more protein!";
-        } else {
-            ratio = String.format("%.2f", (double)calories/proteins);
+            return "Get some more protein!";
         }
-        return ratio;
+        return String.format("%.2f", (double) calories / proteins);
     }
 
     public String getCaloriesAsStr() { return String.valueOf(calories); }

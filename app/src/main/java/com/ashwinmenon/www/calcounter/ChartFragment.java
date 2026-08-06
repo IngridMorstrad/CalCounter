@@ -1,6 +1,5 @@
 package com.ashwinmenon.www.calcounter;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -20,23 +19,32 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import lombok.RequiredArgsConstructor;
+import androidx.fragment.app.Fragment;
 
-@RequiredArgsConstructor
 public class ChartFragment extends Fragment {
 
-    @NonNull
-    private final LineData lineData;
-    @NonNull
-    private final Description description;
+    private LineData lineData;
+    private Description description;
+
+    public ChartFragment() {
+        // Required empty public constructor for Fragment
+    }
+
+    public static ChartFragment newInstance() {
+        return new ChartFragment();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        lineData = new LineData();
+        description = new Description();
+
         List<Entry> entries = new ArrayList<>();
 
         int sz = MainActivityFragment.foodsForAllDays.size();
-        int daysToAverageOver = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_average), "8"));
+        int daysToAverageOver = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(requireActivity()).getString(getString(R.string.key_average), "8"));
         int daysToDisplay = 14;
         int currCalSum = 0;
         for (int i = 1; i <= Math.min(sz, daysToAverageOver * daysToDisplay); i++) {
@@ -47,9 +55,8 @@ public class ChartFragment extends Fragment {
             }
         }
 
-        // needs to be sorted by x to work correctly
         Collections.reverse(entries);
-        LineDataSet dataSet = new LineDataSet(entries, "Calories"); // add entries to dataset
+        LineDataSet dataSet = new LineDataSet(entries, "Calories");
         lineData.addDataSet(dataSet);
         description.setText("Calorie trend: Calories consumed every " + daysToAverageOver + " days.");
         description.setTextSize(12);
@@ -57,7 +64,7 @@ public class ChartFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_chart, container, false);
         LineChart chart = rootView.findViewById(R.id.chart);
         chart.setData(lineData);
@@ -66,9 +73,9 @@ public class ChartFragment extends Fragment {
         return rootView;
     }
 
-    private int sumOf(List<Food> integers) {
+    private int sumOf(List<Food> foods) {
         int s = 0;
-        for (Food f : integers) s += f.getCalories();
+        for (Food f : foods) s += f.getCalories();
         return s;
     }
 }
