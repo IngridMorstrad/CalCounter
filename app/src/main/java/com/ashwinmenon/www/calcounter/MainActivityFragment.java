@@ -1,11 +1,11 @@
 package com.ashwinmenon.www.calcounter;
 
-import android.app.Activity;
-import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,16 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Main fragment that displays list of dates.
- */
 public class MainActivityFragment extends Fragment {
 
-    // TODO: Refactor to use food file or a database
-    // TODO: USDA Food API
-    // TODO: Ability to add multiple of same food
-    // TODO: Add sort by cals/proteins/ratio & asc/desc
-    // TODO: Add option to colour foodsForAllDays by ratio/calorie/protein
     static int daysToQuery;
     static boolean displayNutritionAverages;
     static List<List<Food>> foodsForAllDays = new ArrayList<>();
@@ -50,6 +42,8 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
         Date startDay, currDay;
         GregorianCalendar gregorianCalendar;
@@ -69,6 +63,7 @@ public class MainActivityFragment extends Fragment {
 
         gregorianCalendar = new GregorianCalendar();
 
+        days.clear();
         for (gregorianCalendar.setTime(startDay); !gregorianCalendar.getTime().after(currDay); gregorianCalendar.add(Calendar.DATE, 1)) {
             Date time = gregorianCalendar.getTime();
             int currentTime = (int) (time.getTime() / 1000);
@@ -76,7 +71,7 @@ public class MainActivityFragment extends Fragment {
             days.add(day);
         }
 
-        AppDatabase db = AppDatabase.getDatabase(getActivity().getApplicationContext());
+        AppDatabase db = AppDatabase.getDatabase(requireActivity().getApplicationContext());
         DayDao dayDao = db.dayDao();
         FoodDao foodDao = db.foodDao();
         foodsForAllDays = new ArrayList<>();
@@ -95,23 +90,13 @@ public class MainActivityFragment extends Fragment {
             dayDao.insertAll(missingDays.toArray(new Day[0]));
             List<Food> foods = foodDao.getAll();
             Log.v("MAF", "Food size: " + foods.size());
-            for (Food f : foods) {
-                Log.v("MAF", "Foods are: " + f.getName());
-            }
             for (Day day : days) {
-                Log.v("MainActivityFragment", "Day ID is: " + day.getDayId());
                 foodsForAllDays.add(foodDao.loadAllByDayId(day.getDayId()));
             }
         }).start();
 
         displayNutritionAverages = false;
-
-        new Thread(() -> {
-            Log.v("MainActivityFragment", "food dao is: " + foodDao.getAll());
-        }).start();
-        daysAdapter = new DayAdapter(getActivity(), days);
-
-        super.onCreate(savedInstanceState);
+        daysAdapter = new DayAdapter(requireActivity(), days);
     }
 
     public interface OnDaySelectedListener {
@@ -119,20 +104,16 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
         try {
-            mCallback = ((OnDaySelectedListener) activity);
+            mCallback = ((OnDaySelectedListener) context);
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnDaySelectedListener");
         }
     }
 
-    // Add an ItemClickListener to start an activity where we can add foodsForAllDays for the day clicked
     private void setupListViewListener() {
         lvItems.setOnItemClickListener(
                 (parent, view, position, id) -> {
@@ -141,10 +122,10 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void updateDisplay() {
-        Activity activity = getActivity();
-        TextView proteinsView = activity.findViewById(R.id.proteins);
-        TextView calsView = activity.findViewById(R.id.calories);
-        TextView ratioView = activity.findViewById(R.id.avg);
+        if (getActivity() == null) return;
+        TextView proteinsView = getActivity().findViewById(R.id.proteins);
+        TextView calsView = getActivity().findViewById(R.id.calories);
+        TextView ratioView = getActivity().findViewById(R.id.avg);
         int proteinSum = 0, calSum = 0;
         double ratio = 0.0;
 
@@ -174,24 +155,8 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        daysToQuery = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getActivity().getString(R.string.key_days), "7"));
+        daysToQuery = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(requireActivity()).getString(requireActivity().getString(R.string.key_days), "7"));
         updateDisplay();
-
-        FoodDao foodDao = AppDatabase.getDatabase(getActivity().getApplicationContext()).foodDao();
-        int dayIndex = 0;
-        for (List<Food> foodForDay : foodsForAllDays) {
-            for (Food food : foodForDay) {
-                final String foodName = food.getName();
-                final int foodCals = food.getCalories();
-                final int foodProteins = food.getProteins();
-                final int dayId = days.get(dayIndex).getDayId();
-                final Food newFood = new Food(foodName, foodCals, foodProteins, dayId);
-                new Thread(() -> foodDao.updateAll(newFood)).start();
-            }
-            dayIndex++;
-        }
-
     }
 
     @Override
@@ -199,18 +164,15 @@ public class MainActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         lvItems = rootView.findViewById(R.id.lvItems);
-
         lvItems.setAdapter(daysAdapter);
 
         View cals = rootView.findViewById(R.id.calories);
-
         cals.setOnClickListener(v -> {
             displayNutritionAverages = !displayNutritionAverages;
             updateDisplay();
         });
 
         setupListViewListener();
-
         return rootView;
     }
 }
